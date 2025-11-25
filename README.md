@@ -146,3 +146,31 @@ vercel --prod
 📄 License
 
 MIT License © Tatev Hovhannisyan
+
+License
+MIT License
+
+This project is licensed under the MIT License
+.
+You are free to use, modify, and distribute the code for personal, educational, or open-source projects.
+
+Commercial Use
+
+For commercial use (client work, SaaS, landing pages, or other paid projects), you must purchase the Commercial License on Gumroad
+.
+
+The Commercial License grants you the rights to:
+
+Use this template in unlimited commercial projects
+
+Modify the code as needed
+
+Restrictions:
+
+Redistribution, resale, or sharing the template “as-is” is not allowed
+
+Cannot include the template in open-source repositories
+
+License cannot be transferred to another person or organization
+
+By purchasing, you agree to the terms outlined in the Commercial License.
