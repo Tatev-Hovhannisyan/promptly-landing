@@ -4,6 +4,7 @@ import { useRef, useEffect, useState } from "react";
 
 export default function Hero() {
   const imageRef = useRef<HTMLDivElement | null>(null);
+  const videoRef = useRef<HTMLDivElement | null>(null);
   const bgRef = useRef<HTMLDivElement | null>(null);
   const rafRef = useRef<number | null>(null);
   const sectionRef = useRef<HTMLDivElement | null>(null);
@@ -13,7 +14,7 @@ export default function Hero() {
 
   const handleMouseMove = (e: React.MouseEvent) => {
     const rect = imageRef.current?.getBoundingClientRect();
-    if (!rect || !imageRef.current || !bgRef.current) return;
+    if (!rect || !imageRef.current || !bgRef.current || !videoRef.current) return;
 
     const x = ((e.clientX - rect.left) / rect.width - 0.5) * 20;
     const y = ((e.clientY - rect.top) / rect.height - 0.5) * 20;
@@ -22,23 +23,32 @@ export default function Hero() {
     if (rafRef.current) cancelAnimationFrame(rafRef.current);
     rafRef.current = requestAnimationFrame(() => {
       imageRef.current!.style.transform = `perspective(1200px) rotateY(${-15 + lastPos.current.x}deg) rotateX(${lastPos.current.y}deg)`;
+     if (videoRef.current) {
+  (videoRef.current.style as CSSStyleDeclaration).transform = 
+    `perspective(1200px) rotateY(${15 - lastPos.current.x}deg) rotateX(${-lastPos.current.y}deg)`;
+}
+
       bgRef.current!.style.transform = `translate3d(${-lastPos.current.x * 1.5}px, ${-lastPos.current.y * 1.5}px, 0)`;
     });
   };
 
   const handleMouseLeave = () => {
-    if (!imageRef.current || !bgRef.current) return;
+    if (!imageRef.current || !bgRef.current || !videoRef.current) return;
     if (rafRef.current) cancelAnimationFrame(rafRef.current);
 
     imageRef.current.style.transition = "transform 400ms cubic-bezier(.2,.9,.2,1)";
     imageRef.current.style.transform = "perspective(1200px) rotateY(-15deg) rotateX(0deg)";
 
+    videoRef.current.style.transition = "transform 500ms ease-out";
+    videoRef.current.style.transform = "perspective(1200px) rotateY(15deg) rotateX(0deg)";
+
     bgRef.current.style.transition = "transform 500ms ease-out";
     bgRef.current.style.transform = "translate3d(0,0,0)";
 
     setTimeout(() => {
-      if (imageRef.current) imageRef.current.style.transition = "";
-      if (bgRef.current) bgRef.current.style.transition = "";
+      imageRef.current!.style.transition = "";
+      videoRef.current!.style.transition = "";
+      bgRef.current!.style.transition = "";
     }, 420);
   };
 
@@ -68,21 +78,17 @@ export default function Hero() {
       role="region"
       aria-label="Hero"
       style={{
-        display: "flex",
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "flex-start",
-        minHeight: "100vh",
-        padding: "2rem",
         position: "relative",
-        perspective: "1200px",
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
         overflow: "hidden",
         flexWrap: "wrap",
-        background:
-          "linear-gradient(90deg, rgba(10,15,61,1) 0%, rgba(46,13,63,0.95) 100%)",
+        background: "linear-gradient(90deg, rgba(10,15,61,1) 0%, rgba(46,13,63,0.95) 100%)",
       }}
     >
-      {/* Background */}
+      {/* Background overlay */}
       <div
         ref={bgRef}
         aria-hidden="true"
@@ -97,23 +103,50 @@ export default function Hero() {
         }}
       />
 
-      {/* Content */}
+      {/* Video */}
+      <div
+        ref={videoRef}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        style={{
+          position: "absolute",
+          top: "1.5rem",
+          left: "2rem",
+          width: "400px",
+          height: "300px",
+          borderRadius: "40% / 60%", 
+          overflow: "hidden",
+          zIndex: 1,
+        }}
+      >
+        <video
+          src="/demo/demo.mp4"
+          autoPlay
+          loop
+          muted
+          style={{ width: "100%", height: "100%", objectFit: "cover" }}
+        />
+      </div>
+
+      {/* Text*/}
       <div
         style={{
-          flex: "1 1 400px",
-          maxWidth: "520px",
+          flex: "1 1 500px",
+          maxWidth: "600px",
           padding: "2rem",
           color: "white",
+          textAlign: "center",
           position: "relative",
           zIndex: 2,
-          transform: visible ? "translateX(0)" : "translateX(-60px)",
+          transform: visible ? "translateY(60px)" : "translateY(20px)",
           opacity: visible ? 1 : 0,
+           marginLeft: "15rem",
           transition: "all 900ms cubic-bezier(.2,.9,.2,1)",
         }}
       >
         <h1
           style={{
-            fontSize: "3.4rem",
+            fontSize: "3rem",
             marginBottom: "0.6rem",
             background: "linear-gradient(90deg, #0533eb, #00ffcc)",
             WebkitBackgroundClip: "text",
@@ -124,36 +157,21 @@ export default function Hero() {
         >
           Create AI-Powered Content
           <br />
-          <span
-            style={{
-              color: "#00ffcc",
-              textShadow: "0 0 25px #00ffcc",
-              fontSize: "1.05em",
-            }}
-          >
+          <span style={{ color: "#00ffcc", textShadow: "0 0 25px #00ffcc", fontSize: "1.05em" }}>
             5× Faster With Zero Effort
           </span>
         </h1>
 
-        <p
-          style={{
-            fontSize: "1.2rem",
-            opacity: 0.9,
-            margin: "1.2rem 0 2rem 0",
-            maxWidth: 420,
-            lineHeight: "1.5",
-          }}
-        >
-          Write high-quality blog posts, emails and landing pages in just seconds.  
+        <p style={{ fontSize: "1.2rem", opacity: 0.9, margin: "1.2rem 0 2rem 0", lineHeight: "1.5" }}>
+          Write high-quality blog posts, emails and landing pages in just seconds.
           Boost your workflow instantly — powered by advanced AI.
         </p>
 
-        {/* Текст-«кнопка» вместо Start Now */}
         <div
           onClick={handleClick}
           style={{
             display: "inline-block",
-            padding: "0.85rem 2rem",
+            padding: "1.85rem 2rem",
             borderRadius: 9999,
             fontWeight: 700,
             fontSize: "0.95rem",
@@ -164,39 +182,9 @@ export default function Hero() {
             textDecoration: "none",
             boxShadow: "0 10px 25px rgba(5,51,235,0.5)",
             transition: "all 0.3s ease",
-            transform: visible ? "translateY(0)" : "translateY(20px)",
-            opacity: visible ? 1 : 0,
-  
           }}
-          onMouseEnter={(e) =>
-            (e.currentTarget.style.transform = "translateY(-2px) scale(1.05)")
-          }
-          onMouseLeave={(e) =>
-            (e.currentTarget.style.transform = "translateY(0) scale(1)")
-          }
         >
           Free trial included →
-        </div>
-
-        {/* NEW CLIENT LOGOS */}
-        <div
-          style={{
-            marginTop: "2.5rem",
-            opacity: visible ? 1 : 0,
-            transform: visible ? "translateY(0)" : "translateY(20px)",
-            transition: "all 900ms ease",
-          }}
-        >
-          <p style={{ opacity: 0.7, marginBottom: "0.6rem", fontSize: "0.9rem" }}>
-            Trusted by creators and teams at:
-          </p>
-
-          <div style={{ display: "flex", gap: "1.8rem", opacity: 0.85 }}>
-            <span>• Notion</span>
-            <span>• Figma</span>
-            <span>• Webflow</span>
-            <span>• Intercom</span>
-          </div>
         </div>
       </div>
 
@@ -206,21 +194,13 @@ export default function Hero() {
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
         style={{
-          flex: "1 1 300px",
-          width: "720px",
-          height: "620px",
-          marginLeft: "80px",
-          marginTop: "30px",
-          zIndex: 1,
-          transformStyle: "preserve-3d",
-          transform: "perspective(1200px) rotateY(-15deg) rotateX(0deg)",
-          transition: "transform 120ms ease-out",
-          overflow: "hidden",
+          flex: "0 0 580px",
+          width: "500px",
+          height: "500px",
           borderRadius: "30% / 70%",
-          boxShadow:
-            "0 40px 80px rgba(0,0,0,0.6), 0 10px 40px rgba(0,0,0,0.5), 0 0 40px rgba(255,255,255,0.06) inset",
-          clipPath: "polygon(5% 10%, 100% -70%, 100% 100%, 5% 100%)",
-          position: "relative",
+          overflow: "hidden",
+          zIndex: 2,
+          marginLeft: "7rem",
         }}
       >
         <Image
