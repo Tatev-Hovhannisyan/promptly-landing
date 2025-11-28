@@ -33,7 +33,7 @@ export default function FAQ() {
               key={i}
               className="p-6 rounded-2xl bg-[#1b0b29] transition-all duration-300 shadow-[0_0_15px_rgba(0,255,200,0.2)] hover:scale-105"
             >
-              {/* Кнопка вместо div → A11y OK */}
+            
               <button
                 className="w-full text-left font-semibold text-white"
                 aria-expanded={isOpen}

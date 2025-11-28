@@ -23,7 +23,6 @@ It’s fully designed to **convert visitors into users** with strong visual and 
 ---
 
 ## 📦 Components Overview
-
 | Component | Icon | Description |
 |-----------|------|-------------|
 | `Header.tsx` | 🧭 | Navigation bar with logo, desktop & mobile menu, sticky CTA button |
@@ -148,5 +147,8 @@ Deploy to Vercel or Netlify:
 vercel --prod
 
 
-## 📄 License
-Commercial License © Tatev Hovhannisyan
+📄 License
+
+This template is released under the PRO Commercial License.
+See LICENSE-PRO.md for full terms.
+Commercial use: unlimited projects, client work allowed.

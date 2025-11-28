@@ -67,7 +67,7 @@ const Header = () => {
           </button>
         </nav>
 
-        {/* Mobile burger button with accessibility */}
+    
         <button
           aria-label="Open mobile menu"
           aria-expanded={open}

@@ -14,7 +14,6 @@ export default function Hero() {
 
   const lastPos = useRef({ x: 0, y: 0 });
 
-  // Track window width
   useEffect(() => {
     setWindowWidth(window.innerWidth);
     const handleResize = () => setWindowWidth(window.innerWidth);
@@ -22,7 +21,9 @@ export default function Hero() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const prefersReducedMotion = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const prefersReducedMotion =
+    typeof window !== "undefined" &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   // Mouse parallax effect
   const handleMouseMove = (e: React.MouseEvent) => {
@@ -49,7 +50,8 @@ export default function Hero() {
     if (rafRef.current) cancelAnimationFrame(rafRef.current);
 
     imageRef.current.style.transition = "transform 400ms cubic-bezier(.2,.9,.2,1)";
-    imageRef.current.style.transform = "perspective(1200px) rotateY(-15deg) rotateX(0deg)";
+    imageRef.current.style.transform =
+      "perspective(1200px) rotateY(-15deg) rotateX(0deg)";
 
     videoRef.current.style.transition = "transform 500ms ease-out";
     videoRef.current.style.transform = "perspective(1200px) rotateY(15deg) rotateX(0deg)";
@@ -83,26 +85,25 @@ export default function Hero() {
     if (pricingSection) pricingSection.scrollIntoView({ behavior: "smooth" });
   };
 
-  // Адаптив
   const isMobile = windowWidth < 768;
   const isTablet = windowWidth >= 768 && windowWidth < 1024;
   const isDesktop = windowWidth >= 1024;
 
-  // Видео размеры
+  // Video size
   const videoWidth = isMobile || isTablet ? "90%" : "400px";
   const videoHeight = isMobile || isTablet ? "200px" : "300px";
 
-  // Image style (правый угол, скрыть на планшете и мобильных)
+  // Image style for parallax
   const imageStyle: React.CSSProperties = {
     flex: "0 0 auto",
     borderRadius: "30% / 70%",
     overflow: "hidden",
     zIndex: 2,
     display: isDesktop ? "block" : "none",
-    width: "500px",
-    height: "500px",
+    width: "550px",
+    height: "550px",
     position: "absolute",
-    top: "20%",
+    top: "15%",
     right: "3%",
   };
 
@@ -119,7 +120,8 @@ export default function Hero() {
         justifyContent: "center",
         overflow: "hidden",
         flexWrap: isMobile ? "wrap" : "nowrap",
-        background: "linear-gradient(90deg, rgba(10,15,61,1) 0%, rgba(46,13,63,0.95) 100%)",
+        background:
+          "linear-gradient(90deg, rgba(10,15,61,1) 0%, rgba(46,13,63,0.95) 100%)",
         padding: "2rem",
       }}
     >
@@ -132,12 +134,13 @@ export default function Hero() {
           inset: 0,
           zIndex: 0,
           pointerEvents: "none",
-          background: "linear-gradient(120deg, rgba(255,255,255,0.08), rgba(0,255,204,0.05))",
+          background:
+            "linear-gradient(120deg, rgba(255,255,255,0.08), rgba(0,255,204,0.05))",
           mixBlendMode: "overlay",
         }}
       />
 
-      {/* Video (слева) */}
+      {/* Video  */}
       <div
         ref={videoRef}
         onMouseMove={handleMouseMove}
@@ -147,7 +150,7 @@ export default function Hero() {
           marginTop: isMobile ? "2rem" : "-8rem",
           marginLeft: isMobile ? 0 : "-19rem",
           marginBottom: isMobile ? "2rem" : 0,
-          flex: "0 0 auto", 
+          flex: "0 0 auto",
           width: videoWidth,
           height: videoHeight,
           borderRadius: "10% / 60%",
@@ -167,16 +170,16 @@ export default function Hero() {
         />
       </div>
 
-      {/* Text (центр) */}
+      {/* Text  */}
       <div
         style={{
           flex: "1 1 500px",
-          maxWidth: "500px",
-          marginLeft: isMobile ? 0 : "2rem",
+          maxWidth: "600px",
+          marginLeft: isMobile ? 0 : "-9em",
           marginRight: isMobile ? 0 : "12rem",
           padding: "2rem",
           color: "white",
-          textAlign: "center",
+          textAlign: "right",
           position: "relative",
           zIndex: 2,
           transform: visible ? "translateY(60px)" : "translateY(20px)",
@@ -240,13 +243,19 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* Image (справа) */}
-      <div ref={imageRef} onMouseMove={handleMouseMove} onMouseLeave={handleMouseLeave} style={imageStyle}>
+      {/* Image  */}
+      <div
+        ref={imageRef}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        style={imageStyle}
+      >
         <Image
           src="/1.webp"
           alt="Creative inspiration"
           fill
           sizes={isDesktop ? "50vw" : "90vw"}
+          quality={70}
           priority
           style={{ objectFit: "cover" }}
         />

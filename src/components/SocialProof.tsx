@@ -41,10 +41,10 @@ export default function SocialProof() {
   key={i}
   src={logo}
   alt={`Company ${i + 1}`}
-  loading="lazy" // 🔹 lazy loading
+  loading="lazy" 
   className={`h-16 object-contain opacity-80 hover:opacity-100 transition-all duration-700
     ${visible ? "opacity-80 translate-y-0 scale-100" : "opacity-0 translate-y-6 scale-90"}
-    hover:scale-105 hover:drop-shadow-[0_0_8px_#00ffcc]`} // 🔹 уменьшен drop-shadow
+    hover:scale-105 hover:drop-shadow-[0_0_8px_#00ffcc]`} 
   style={{ transitionDelay: `${i * 150}ms` }}
 />
 

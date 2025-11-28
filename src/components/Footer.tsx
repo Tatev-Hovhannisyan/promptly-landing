@@ -62,7 +62,7 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* Popup with smooth animation */}
+
       <div
         aria-live="polite"
         className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-4 px-4 py-2 rounded-md bg-[#0533eb] text-white text-sm shadow-lg z-50 transition-all duration-300

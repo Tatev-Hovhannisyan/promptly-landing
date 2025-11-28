@@ -30,7 +30,6 @@ export default function FAQ() {
           const isOpen = openIndex === i;
           const contentRef = useRef<HTMLDivElement>(null);
 
-          // Управление высотой
           useEffect(() => {
             const el = contentRef.current;
             if (!el) return;
@@ -58,7 +57,7 @@ export default function FAQ() {
                 {faq.q}
               </button>
 
-              {/* Анимированная область */}
+              
               <div
                 id={`faq-panel-${i}`}
                 ref={contentRef}
