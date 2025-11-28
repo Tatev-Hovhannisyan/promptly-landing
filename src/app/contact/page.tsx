@@ -32,7 +32,7 @@ export default function ContactPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Здесь можно интегрировать EmailJS, Google Forms или API
+
     console.log("Form submitted:", formData);
     setSubmitted(true);
     setFormData({ name: "", email: "", message: "" });
@@ -56,11 +56,8 @@ export default function ContactPage() {
           ← Back to Home
         </button>
 
-        <h1 className="text-5xl font-bold drop-shadow-[0_0_15px_#0533eb]">
-          Contact Us
-        </h1>
+        <h1 className="text-5xl font-bold drop-shadow-[0_0_15px_#0533eb]">Contact Us</h1>
 
-        {/* Контактная информация */}
         <div className="p-6 rounded-2xl bg-white/5 backdrop-blur-md border border-white/20 shadow-xl">
           <ul className="space-y-4 text-lg">
             <li>
@@ -75,7 +72,6 @@ export default function ContactPage() {
           </ul>
         </div>
 
-        {/* Форма контакта */}
         <div className="p-6 rounded-2xl bg-white/5 backdrop-blur-md border border-white/20 shadow-xl">
           {submitted ? (
             <p className="text-green-400 font-semibold text-center">

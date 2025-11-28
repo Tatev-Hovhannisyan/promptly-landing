@@ -1,90 +1,78 @@
 "use client";
-import { FaBolt, FaSearch, FaClock } from "react-icons/fa";
-import { useEffect, useRef, useState } from "react";
 
-const features = [
-  { icon: <FaBolt />, title: "Fast Generation", desc: "Get AI content in seconds." },
-  { icon: <FaSearch />, title: "Smart Suggestions", desc: "Relevant suggestions for your text." },
-  { icon: <FaClock />, title: "Save Time", desc: "Spend less time writing and editing." }
+import { useState, useRef, useEffect } from "react";
+
+const faqs = [
+  { q: "How does payment work?", a: "You can pay monthly or yearly via credit card or PayPal." },
+  { q: "Can I cancel anytime?", a: "Yes, you can cancel your subscription at any time." },
+  { q: "Do you offer refunds?", a: "We offer a 14-day refund policy for all plans." },
+  { q: "Do I need prior experience?", a: "No experience required. Our AI handles everything." }
 ];
 
-export default function Features() {
-  const [visible, setVisible] = useState(false);
-  const sectionRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) setVisible(true);
-      },
-      { threshold: 0.25 }
-    );
-    if (sectionRef.current) observer.observe(sectionRef.current);
-    return () => {
-      if (sectionRef.current) observer.unobserve(sectionRef.current);
-    };
-  }, []);
+export default function FAQ() {
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
     <section
-      ref={sectionRef}
-      aria-label="Features section"
-      className={`relative py-20 px-6 transition-all duration-1000 ease-out
-        ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"}`}
-      style={{ background: "linear-gradient(to bottom, #0a0f3d, #2e0d3f)" }}
+      aria-labelledby="faq-title"
+      className="py-20 px-6 text-white"
+      style={{ background: "linear-gradient(to bottom, #2e0d3f, #0a0f3d)" }}
     >
-      {/* Top glowing line */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[85%] h-[1px] bg-white/20"></div>
-
       <h2
-        className="text-4xl font-bold mb-14 text-center text-white
-        drop-shadow-[0_0_6px_rgba(255,255,255,0.35)]"
+        id="faq-title"
+        className="text-4xl font-bold text-center mb-14 drop-shadow-[0_0_20px_#0533eb]"
       >
-        Features
+        Frequently Asked Questions (FAQ)
       </h2>
 
-      <div
-        className="
-          max-w-6xl mx-auto 
-          grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 
-          gap-10 md:gap-12
-        "
-      >
-        {features.map((feature, i) => (
-          <div
-            key={i}
-            className={`
-              flex flex-col items-center p-8 rounded-2xl
-              transition-all duration-700 ease-out text-center
-              ${
-                visible
-                  ? "opacity-100 translate-y-0"
-                  : "opacity-0 translate-y-10"
-              }
-              hover:-translate-y-3
-              hover:shadow-[0_0_25px_rgba(0,255,200,0.35)]
-            `}
-            style={{
-              background: "#1b0b29",
-              boxShadow: "0 0 15px rgba(0,0,0,0.4)"
-            }}
-          >
-            {/* Feature icon */}
-            <div className="text-5xl mb-5 text-[#7d5cff] drop-shadow-[0_0_6px_#7d5cff70]">
-              {feature.icon}
+      <div className="max-w-4xl mx-auto space-y-6">
+        {faqs.map((faq, i) => {
+          const isOpen = openIndex === i;
+          const contentRef = useRef<HTMLDivElement>(null);
+
+          // Управление высотой
+          useEffect(() => {
+            const el = contentRef.current;
+            if (!el) return;
+
+            if (isOpen) {
+              el.style.height = el.scrollHeight + "px";
+              el.style.opacity = "1";
+            } else {
+              el.style.height = "0px";
+              el.style.opacity = "0";
+            }
+          }, [isOpen]);
+
+          return (
+            <div
+              key={i}
+              className="p-6 rounded-2xl bg-[#1b0b29] transition-all duration-300 shadow-[0_0_15px_rgba(0,255,200,0.2)] hover:scale-105"
+            >
+              <button
+                className="w-full text-left font-semibold text-white"
+                aria-expanded={isOpen}
+                aria-controls={`faq-panel-${i}`}
+                onClick={() => setOpenIndex(isOpen ? null : i)}
+              >
+                {faq.q}
+              </button>
+
+              {/* Анимированная область */}
+              <div
+                id={`faq-panel-${i}`}
+                ref={contentRef}
+                className="overflow-hidden transition-all duration-300 ease-in-out"
+                style={{
+                  height: "0px",
+                  opacity: 0,
+                }}
+              >
+                <p className="mt-2 text-white/80">{faq.a}</p>
+              </div>
             </div>
-
-            {/* Feature title */}
-            <h3 className="text-2xl font-semibold mb-3 text-white">
-              {feature.title}
-            </h3>
-
-            {/* Feature description */}
-            <p className="text-gray-300 leading-relaxed">
-              {feature.desc}
-            </p>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </section>
   );

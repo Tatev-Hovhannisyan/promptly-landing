@@ -1,9 +1,14 @@
+"use client";
+
 import { useState, useEffect } from "react";
 
 export default function StickyCTA() {
   const [show, setShow] = useState(true);
+  const [reduceMotion, setReduceMotion] = useState(false);
 
   useEffect(() => {
+    setReduceMotion(window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+
     const footer = document.querySelector("footer");
     const handleScroll = () => {
       if (!footer) return;
@@ -29,6 +34,7 @@ export default function StickyCTA() {
         bg-gradient-to-r from-[#0533eb] to-[#00ffcc]
         shadow-[0_0_25px_rgba(5,51,235,0.5)]
         hover:scale-105 transition-all duration-300 z-50"
+      style={reduceMotion ? { transition: "none" } : {}}
     >
       Start Now
     </button>

@@ -1,15 +1,27 @@
 "use client";
 
+import { useRef, useState, useEffect } from "react";
+
 export default function TargetAudience() {
-  const audiences = [
-    "Freelancers",
-    "Small Businesses",
-    "Agencies",
-    "Marketers"
-  ];
+  const audiences = ["Freelancers", "Small Businesses", "Agencies", "Marketers"];
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+  const [reduceMotion, setReduceMotion] = useState(false);
+
+  useEffect(() => {
+    setReduceMotion(window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) setVisible(true);
+    }, { threshold: 0.3 });
+
+    if (sectionRef.current) observer.observe(sectionRef.current);
+    return () => { if (sectionRef.current) observer.unobserve(sectionRef.current); };
+  }, []);
 
   return (
     <section
+      ref={sectionRef}
       aria-label="Target Audience"
       className="py-20 px-6 text-white"
       style={{ background: "linear-gradient(to bottom, #0a0f3d, #05071f)" }}
@@ -22,7 +34,13 @@ export default function TargetAudience() {
         {audiences.map((audience, i) => (
           <div
             key={i}
+            aria-label={`Target audience: ${audience}`}
             className="flex flex-col items-center p-8 rounded-2xl bg-[#1b0b29] text-center hover:scale-105 transition-all duration-300 shadow-[0_0_15px_rgba(0,255,200,0.2)]"
+            style={{
+              opacity: visible ? 1 : 0,
+              transform: visible ? "translateY(0)" : "translateY(20px)",
+              transition: reduceMotion ? "none" : `all 0.5s ease ${i * 150}ms`,
+            }}
           >
             <p className="text-xl font-semibold">{audience}</p>
           </div>

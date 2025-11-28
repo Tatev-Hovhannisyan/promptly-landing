@@ -1,5 +1,6 @@
 "use client";
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 
 export default function Footer() {
   const [popup, setPopup] = useState<{ label: string; visible: boolean }>({
@@ -9,7 +10,7 @@ export default function Footer() {
 
   const handleDynamicLink = (label: string) => {
     setPopup({ label, visible: true });
-    setTimeout(() => setPopup({ label, visible: false }), 2500); // скрываем через 2.5 сек
+    setTimeout(() => setPopup({ label, visible: false }), 2500);
   };
 
   return (
@@ -17,8 +18,8 @@ export default function Footer() {
       <div>
         <h3 className="text-xl font-bold mb-2">Promptly</h3>
         <p className="max-w-xs opacity-80 text-sm">
-          Instantly generate AI-powered content for blogs, emails, and
-          marketing. Fast, secure, and effortless.
+          Instantly generate AI-powered content for blogs, emails, and marketing.
+          Fast, secure, and effortless.
         </p>
       </div>
 
@@ -61,12 +62,15 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* Popup notification */}
-      {popup.visible && (
-        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-4 px-4 py-2 rounded-md bg-[#0533eb] text-white text-sm shadow-lg z-50 transition-all duration-300">
-          {popup.label} page is not available.
-        </div>
-      )}
+      {/* Popup with smooth animation */}
+      <div
+        aria-live="polite"
+        className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-4 px-4 py-2 rounded-md bg-[#0533eb] text-white text-sm shadow-lg z-50 transition-all duration-300
+          ${popup.visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2 pointer-events-none"}
+        `}
+      >
+        {popup.label && `${popup.label} page is not available.`}
+      </div>
     </footer>
   );
 }

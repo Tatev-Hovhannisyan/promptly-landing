@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 
 export default function Demo({ onVisible }: { onVisible?: () => void }) {
   const [input, setInput] = useState("");
@@ -11,20 +11,24 @@ export default function Demo({ onVisible }: { onVisible?: () => void }) {
   const resultRef = useRef<HTMLDivElement>(null);
   const sectionRef = useRef<HTMLDivElement>(null);
 
-  const sampleTexts = [
-    "Unlock the full potential of AI for your content.",
-    "Generate engaging posts, emails, and articles instantly.",
-    "Boost productivity and save hours of writing.",
-    "Transform ideas into polished content in seconds.",
-    "Get smart suggestions to improve your text effortlessly.",
-  ];
+  const sampleTexts = useMemo(
+    () => [
+      "Unlock the full potential of AI for your content.",
+      "Generate engaging posts, emails, and articles instantly.",
+      "Boost productivity and save hours of writing.",
+      "Transform ideas into polished content in seconds.",
+      "Get smart suggestions to improve your text effortlessly.",
+    ],
+    []
+  );
 
-  // Typewriter effect
+  // Typewriter
   useEffect(() => {
     if (!isGenerating || !result) return;
-    setDisplayedText("");
 
+    setDisplayedText("");
     let i = 0;
+
     const interval = setInterval(() => {
       setDisplayedText((prev) => prev + result[i]);
       i++;
@@ -37,34 +41,35 @@ export default function Demo({ onVisible }: { onVisible?: () => void }) {
     return () => clearInterval(interval);
   }, [isGenerating, result]);
 
-  // Intersection Observer (fade-in Demo section)
+  // Intersection Observer
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
           setIsVisible(true);
-          if (onVisible) onVisible();
+          onVisible?.();
         }
       },
       { threshold: 0.3 }
     );
 
-    if (sectionRef.current) observer.observe(sectionRef.current);
+    const el = sectionRef.current;
+    if (el) observer.observe(el);
 
     return () => {
-      if (sectionRef.current) observer.unobserve(sectionRef.current);
+      if (el) observer.unobserve(el);
     };
   }, [onVisible]);
 
-  const handleGenerate = () => {
+  const handleGenerate = useCallback(() => {
     if (!input.trim()) return;
     const randomText =
       sampleTexts[Math.floor(Math.random() * sampleTexts.length)];
     setResult(randomText);
     setIsGenerating(true);
-  };
+  }, [input, sampleTexts]);
 
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") handleGenerate();
   };
 
@@ -87,24 +92,33 @@ export default function Demo({ onVisible }: { onVisible?: () => void }) {
   const emerald = "#084E40";
 
   return (
-    <div
+    <section
+      aria-labelledby="demo-title"
+      role="region"
       ref={sectionRef}
       className={`relative w-full py-36 flex justify-center transition-all duration-1000 ease-in-out ${
         isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-20"
       }`}
     >
-      {/* Divider line */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[80%] h-[1px] bg-white/20"></div>
+      {/* Divider */}
+      <div
+        aria-hidden="true"
+        className="absolute top-0 left-1/2 -translate-x-1/2 w-[80%] h-[1px] bg-white/20"
+      />
 
-      <section
+      <div
         className="w-full max-w-4xl relative rounded-3xl p-10 flex flex-col gap-8 backdrop-blur-xl transition-all duration-500"
         style={{
           background: cardBg,
           border: `2px solid ${glowBlue}`,
-          boxShadow: "0 0 30px rgba(5,51,235,0.4), 0 0 90px rgba(5,51,235,0.2)",
+          boxShadow:
+            "0 0 30px rgba(5,51,235,0.4), 0 0 90px rgba(5,51,235,0.2)",
         }}
       >
-        <h2 className="text-4xl font-bold text-center text-white drop-shadow-[0_0_10px_#0533eb]">
+        <h2
+          id="demo-title"
+          className="text-4xl font-bold text-center text-white drop-shadow-[0_0_10px_#0533eb]"
+        >
           Instant Creativity
         </h2>
 
@@ -140,16 +154,19 @@ export default function Demo({ onVisible }: { onVisible?: () => void }) {
             <button
               aria-label="Generate AI content"
               onClick={handleGenerate}
-              className="px-6 py-3 rounded-xl font-semibold text-white transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_#0533eb]"
+              disabled={isGenerating}
+              className="px-6 py-3 rounded-xl font-semibold text-white transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_#0533eb] disabled:opacity-50 disabled:cursor-not-allowed"
               style={{ backgroundColor: glowBlue }}
             >
-              Generate
+              {isGenerating ? "Generating..." : "Generate"}
             </button>
           </div>
 
-          {/* Result box */}
+          {/* Result */}
           <div
             ref={resultRef}
+            role="status"
+            aria-live="polite"
             className="rounded-xl p-4 max-h-[400px] overflow-y-auto relative text-white whitespace-pre-wrap"
             style={{
               background: "#0a0f3d",
@@ -163,7 +180,7 @@ export default function Demo({ onVisible }: { onVisible?: () => void }) {
                 <button
                   aria-label="Clear result"
                   onClick={handleClear}
-                  className="absolute top-3 right-3 text-white text-lg hover:text-[#53a7ff] transition"
+                  className="absolute top-3 right-3 text-white text-lg hover:text-[#53a7ff] transition focus:outline outline-2 outline-white"
                 >
                   ✕
                 </button>
@@ -173,7 +190,7 @@ export default function Demo({ onVisible }: { onVisible?: () => void }) {
             )}
           </div>
 
-          {/* Buttons: Try now + Copy */}
+          {/* CTA buttons */}
           {displayedText && !isGenerating && (
             <div className="text-center mt-4 flex flex-col sm:flex-row justify-center gap-4 animate-fadeIn">
               <a
@@ -198,7 +215,7 @@ export default function Demo({ onVisible }: { onVisible?: () => void }) {
             </div>
           )}
         </div>
-      </section>
+      </div>
 
       <style jsx>{`
         @keyframes fadeIn {
@@ -221,6 +238,6 @@ export default function Demo({ onVisible }: { onVisible?: () => void }) {
           }
         }
       `}</style>
-    </div>
+    </section>
   );
 }

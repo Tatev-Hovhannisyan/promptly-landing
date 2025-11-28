@@ -6,7 +6,6 @@ import { motion, AnimatePresence } from "framer-motion";
 const Header = () => {
   const [open, setOpen] = useState(false);
 
-  // Scroll smoothly to the pricing section
   const scrollToPricing = () => {
     const section = document.getElementById("pricing");
     if (section) section.scrollIntoView({ behavior: "smooth" });
@@ -28,7 +27,6 @@ const Header = () => {
           border-b border-white/20 shadow-lg
         "
       >
-        {/* Logo */}
         <Link
           href="/"
           prefetch={false}
@@ -39,7 +37,6 @@ const Header = () => {
           Promptly
         </Link>
 
-        {/* Desktop navigation */}
         <nav className="hidden md:flex items-center gap-8">
           <Link
             href="/about"
@@ -55,7 +52,6 @@ const Header = () => {
             Contact
           </Link>
 
-          {/* Call-to-Action (CTA) button */}
           <button
             onClick={scrollToPricing}
             aria-label="Scroll to pricing"
@@ -71,19 +67,22 @@ const Header = () => {
           </button>
         </nav>
 
-        {/* Mobile burger menu button */}
+        {/* Mobile burger button with accessibility */}
         <button
           aria-label="Open mobile menu"
+          aria-expanded={open}
+          aria-controls="mobile-menu"
           className="md:hidden text-white text-3xl"
           onClick={() => setOpen(!open)}
         >
           ☰
         </button>
 
-        {/* Mobile menu */}
         <AnimatePresence>
           {open && (
             <motion.div
+              id="mobile-menu"
+              aria-label="Mobile Navigation Menu"
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
@@ -111,7 +110,6 @@ const Header = () => {
                 Contact
               </Link>
 
-              {/* Mobile CTA button */}
               <button
                 onClick={() => {
                   scrollToPricing();
@@ -128,7 +126,6 @@ const Header = () => {
                 Try Now
               </button>
 
-              {/* Close mobile menu */}
               <button
                 onClick={() => setOpen(false)}
                 className="text-white/70 hover:text-white text-sm mt-2"
@@ -140,7 +137,6 @@ const Header = () => {
         </AnimatePresence>
       </motion.header>
 
-      {/* 🔥 Sticky mobile CTA button */}
       <button
         onClick={scrollToPricing}
         className="
@@ -151,7 +147,7 @@ const Header = () => {
           hover:scale-105 active:scale-95
           transition-all duration-300
         "
-        style={{ backdropFilter: 'blur(6px)' }}
+        style={{ backdropFilter: "blur(6px)" }}
       >
         Start Now
       </button>

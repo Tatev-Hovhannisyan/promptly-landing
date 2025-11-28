@@ -1,4 +1,5 @@
 "use client";
+
 import Image from "next/image";
 import { useRef, useEffect, useState } from "react";
 
@@ -13,6 +14,7 @@ export default function Hero() {
 
   const lastPos = useRef({ x: 0, y: 0 });
 
+  // Track window width
   useEffect(() => {
     setWindowWidth(window.innerWidth);
     const handleResize = () => setWindowWidth(window.innerWidth);
@@ -20,7 +22,12 @@ export default function Hero() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  const prefersReducedMotion = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // Mouse parallax effect
   const handleMouseMove = (e: React.MouseEvent) => {
+    if (prefersReducedMotion) return;
+
     const rect = imageRef.current?.getBoundingClientRect();
     if (!rect || !imageRef.current || !bgRef.current || !videoRef.current) return;
 
@@ -37,6 +44,7 @@ export default function Hero() {
   };
 
   const handleMouseLeave = () => {
+    if (prefersReducedMotion) return;
     if (!imageRef.current || !bgRef.current || !videoRef.current) return;
     if (rafRef.current) cancelAnimationFrame(rafRef.current);
 
@@ -56,6 +64,7 @@ export default function Hero() {
     }, 420);
   };
 
+  // Intersection Observer for animation
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -63,9 +72,7 @@ export default function Hero() {
       },
       { threshold: 0.3 }
     );
-
     if (sectionRef.current) observer.observe(sectionRef.current);
-
     return () => {
       if (sectionRef.current) observer.unobserve(sectionRef.current);
     };
@@ -76,12 +83,28 @@ export default function Hero() {
     if (pricingSection) pricingSection.scrollIntoView({ behavior: "smooth" });
   };
 
-  // Размеры для видео и изображения в зависимости от ширины экрана
+  // Адаптив
   const isMobile = windowWidth < 768;
-  const videoWidth = isMobile ? "280px" : "400px";
-  const videoHeight = isMobile ? "200px" : "300px";
-  const imageSize = isMobile ? "300px" : "500px";
-  const textMarginLeft = isMobile ? "0" : "15rem";
+  const isTablet = windowWidth >= 768 && windowWidth < 1024;
+  const isDesktop = windowWidth >= 1024;
+
+  // Видео размеры
+  const videoWidth = isMobile || isTablet ? "90%" : "400px";
+  const videoHeight = isMobile || isTablet ? "200px" : "300px";
+
+  // Image style (правый угол, скрыть на планшете и мобильных)
+  const imageStyle: React.CSSProperties = {
+    flex: "0 0 auto",
+    borderRadius: "30% / 70%",
+    overflow: "hidden",
+    zIndex: 2,
+    display: isDesktop ? "block" : "none",
+    width: "500px",
+    height: "500px",
+    position: "absolute",
+    top: "20%",
+    right: "3%",
+  };
 
   return (
     <section
@@ -95,7 +118,7 @@ export default function Hero() {
         alignItems: "center",
         justifyContent: "center",
         overflow: "hidden",
-        flexWrap: "wrap",
+        flexWrap: isMobile ? "wrap" : "nowrap",
         background: "linear-gradient(90deg, rgba(10,15,61,1) 0%, rgba(46,13,63,0.95) 100%)",
         padding: "2rem",
       }}
@@ -114,36 +137,43 @@ export default function Hero() {
         }}
       />
 
-      {/* Video */}
+      {/* Video (слева) */}
       <div
         ref={videoRef}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
         style={{
-          position: "absolute",
-          top: isMobile ? "1rem" : "1.5rem",
-          left: isMobile ? "1rem" : "2rem",
+          position: "relative",
+          marginTop: isMobile ? "2rem" : "-8rem",
+          marginLeft: isMobile ? 0 : "-19rem",
+          marginBottom: isMobile ? "2rem" : 0,
+          flex: "0 0 auto", 
           width: videoWidth,
           height: videoHeight,
-          borderRadius: "40% / 60%",
+          borderRadius: "10% / 60%",
           overflow: "hidden",
           zIndex: 1,
         }}
       >
         <video
           src="/Demo/demo.mp4"
+          preload="metadata"
+          poster="/Demo/demo-poster.jpg"
           autoPlay
           loop
           muted
+          playsInline
           style={{ width: "100%", height: "100%", objectFit: "cover" }}
         />
       </div>
 
-      {/* Text */}
+      {/* Text (центр) */}
       <div
         style={{
           flex: "1 1 500px",
-          maxWidth: "600px",
+          maxWidth: "500px",
+          marginLeft: isMobile ? 0 : "2rem",
+          marginRight: isMobile ? 0 : "12rem",
           padding: "2rem",
           color: "white",
           textAlign: "center",
@@ -151,7 +181,6 @@ export default function Hero() {
           zIndex: 2,
           transform: visible ? "translateY(60px)" : "translateY(20px)",
           opacity: visible ? 1 : 0,
-          marginLeft: textMarginLeft,
           transition: "all 900ms cubic-bezier(.2,.9,.2,1)",
         }}
       >
@@ -187,8 +216,8 @@ export default function Hero() {
             lineHeight: "1.5",
           }}
         >
-          Write high-quality blog posts, emails and landing pages in just seconds.
-          Boost your workflow instantly — powered by advanced AI.
+          Write high-quality blog posts, emails and landing pages in just seconds. Boost
+          your workflow instantly — powered by advanced AI.
         </p>
 
         <div
@@ -203,7 +232,6 @@ export default function Hero() {
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",
             cursor: "pointer",
-            textDecoration: "none",
             boxShadow: "0 10px 25px rgba(5,51,235,0.5)",
             transition: "all 0.3s ease",
           }}
@@ -212,27 +240,13 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* Image */}
-      <div
-        ref={imageRef}
-        onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
-        style={{
-          flex: "0 0 auto",
-          width: imageSize,
-          height: imageSize,
-          borderRadius: "30% / 70%",
-          overflow: "hidden",
-          zIndex: 2,
-          marginLeft: isMobile ? "0" : "7rem",
-          marginTop: isMobile ? "2rem" : "0",
-        }}
-      >
+      {/* Image (справа) */}
+      <div ref={imageRef} onMouseMove={handleMouseMove} onMouseLeave={handleMouseLeave} style={imageStyle}>
         <Image
           src="/1.webp"
           alt="Creative inspiration"
           fill
-          sizes={isMobile ? "90vw" : "50vw"}
+          sizes={isDesktop ? "50vw" : "90vw"}
           priority
           style={{ objectFit: "cover" }}
         />
